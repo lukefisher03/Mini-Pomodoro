@@ -2,12 +2,16 @@ from tkinter import *
 from tkinter import ttk, messagebox, PhotoImage
 
 PHASES = [
-    [5, "WORK"],
-    [2, "SHORT REST 1"],
-    [5, "WORK"],
-    [2, "SHORT REST 2"],
-    [5, "WORK"],
-    [4, "LONG REST"],
+    [25, "WORK"],
+    [5, "SHORT REST 1"],
+    [25, "WORK"],
+    [5, "SHORT REST 2"],
+    [25, "WORK"],
+    [5, "SHORT REST 3"],
+    [25, "WORK"],
+    [5, "SHORT REST 4"],
+    [25, "WORK"],
+    [15, "LONG REST"],
 ]
 
 
