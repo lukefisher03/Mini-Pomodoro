@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import ttk, messagebox, PhotoImage
+from playsound3 import playsound
 
+TESTING = False
 PHASES = [
     [25, "WORK"],
     [5, "SHORT REST 1"],
@@ -22,6 +24,7 @@ class PomodoroTimer(Tk):
     phase_index = 0
     counter_running = True
     img = None
+    mixer, alert_sound = None, None
     clock_label, phase_label, start, reset = None, None, None, None
 
     def __init__(self, phases: list) -> None:
@@ -30,10 +33,10 @@ class PomodoroTimer(Tk):
         self.frame = ttk.Frame(self, padding=10)
         self.frame.grid()
         self.phases = phases
-
         # The phase array is in minutes, convert all the values to seconds
-        for i in range(len(self.phases)):
-            self.phases[i][0] *= 60
+        if not TESTING:
+            for i in range(len(self.phases)):
+                self.phases[i][0] *= 60
         self.clock = self.phases[self.phase_index][0]
         self.img = PhotoImage(file="tomato.png")
         self.iconphoto(False, self.img)
@@ -61,6 +64,7 @@ class PomodoroTimer(Tk):
                 self.phase_index += 1
                 self.phase_index %= len(PHASES)
                 self.counter_running = False
+                playsound("alert_sound.wav", block=False)
                 messagebox.showinfo(
                     "NEW PHASE!",
                     f"{self.phases[previous_phase][1]} has ended.\nPress start to begin new phase, {self.phases[self.phase_index][1]}",

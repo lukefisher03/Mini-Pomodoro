@@ -5,6 +5,11 @@ If you want to modify the length of each phase or even rename them, there's a 2D
 
 ![screenshot of app](screenshot.png)
 
+
+```
+NOTE: If audio isn't working, try installing ffmpeg through apt.
+```
+
 ### Future enhancements
 - Could add a task list below it
 - Add the ability to change phase length in the UI
