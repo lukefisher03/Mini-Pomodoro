@@ -1,6 +1,5 @@
 from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox, PhotoImage
 
 PHASES = [
     [5, "WORK"],
@@ -11,73 +10,89 @@ PHASES = [
     [4, "LONG REST"],
 ]
 
-phase_index = 0
-clock_val = PHASES[phase_index][0]
-counter_running = False
-root = Tk()
-frame = ttk.Frame(root, padding=10)
 
-
-def seconds_to_clock(seconds):
-    current_clock_val = seconds
-    mm = current_clock_val // 60
-    minutes_str = f"0{mm}" if mm < 10 else str(mm)
-    current_clock_val %= 60
-    ss = current_clock_val
-    seconds_str = f"0{ss}" if ss < 10 else str(ss)
-    return f"{minutes_str}:{seconds_str}"
-
-
-def iterate_counter():
-    global clock_val, counter_running, phase_index
-    if counter_running:
-        print("Counter running is true")
-        if clock_val == 0:
-            print("Next phase")
-            previous_phase = phase_index
-            phase_index += 1
-            phase_index = phase_index % len(PHASES)
-            counter_running = False
-            messagebox.showinfo(
-                "NEW PHASE!",
-                f"{PHASES[previous_phase][1]} has ended.\nPress start to begin new phase, {PHASES[phase_index][1]}",
-            )
-            reset_counter()
-            return
-        clock_val -= 1
-        lbl.config(text=seconds_to_clock(clock_val))
-        root.after(1000, iterate_counter)
-    else:
-        print("Counter running is false or clock hit zero")
-
-
-def start_counter():
-    print("Setting counter running to true")
-    global clock_val, counter_running, phase_index
-    lbl.config(text=seconds_to_clock(clock_val))
+class PomodoroTimer(Tk):
+    frame = None
+    phases = None
+    clock = None
+    phase_index = 0
     counter_running = True
-    clock_val = (
-        PHASES[phase_index][0] + 1
-    )  # Essentially throw away the first time running iterate_counter
-    iterate_counter()
+    img = None
+    clock_label, phase_label, start, reset = None, None, None, None
+
+    def __init__(self, phases: list) -> None:
+        super().__init__()
+        self.title("Mini Pomodoro")
+        self.frame = ttk.Frame(self, padding=10)
+        self.frame.grid()
+        self.phases = phases
+        # for i in range(len(self.phases)):
+        #     self.phases[i][0] *= 60
+        self.clock = self.phases[self.phase_index][0]
+        self.img = PhotoImage(file="tomato.png")
+        self.iconphoto(False, self.img)
+        ttk.Label(self.frame, image=self.img).grid(column=0, row=0)
+        self.clock_label = ttk.Label(self.frame, text=self.seconds_to_clock(self.clock))
+        self.phase_label = ttk.Label(
+            self.frame, text=f"PHASE: {self.phases[self.phase_index][1]}"
+        )
+        self.phase_label.grid(column=0, row=1)
+        self.clock_label.grid(column=0, row=2, pady=(0, 20))
+        ttk.Button(self.frame, text="Start", command=self.start_counter).grid(
+            column=0, row=3, padx=50
+        )
+        ttk.Button(self.frame, text="Reset", command=self.reset_counter).grid(
+            column=0, row=4
+        )
+        ttk.Button(self.frame, text="Quit", command=self.destroy).grid(column=0, row=5)
+
+    def iterate_counter(self):
+        if self.counter_running:
+            print("Counter running is true")
+            if self.clock == 0:
+                print("Next phase")
+                previous_phase = self.phase_index
+                self.phase_index += 1
+                self.phase_index %= len(PHASES)
+                self.counter_running = False
+                messagebox.showinfo(
+                    "NEW PHASE!",
+                    f"{self.phases[previous_phase][1]} has ended.\nPress start to begin new phase, {self.phases[self.phase_index][1]}",
+                )
+                self.reset_counter()
+                return
+            self.clock -= 1
+            self.clock_label.config(text=self.seconds_to_clock(self.clock))
+            self.after(1000, self.iterate_counter)
+        else:
+            print("Counter running is false or clock hit zero")
+
+    def start_counter(self):
+        print("Setting counter running to true")
+        self.clock_label.config(text=self.seconds_to_clock(self.clock))
+        self.counter_running = True
+        self.clock = (
+            self.phases[self.phase_index][0] + 1
+        )  # Essentially throw away the first time running iterate_counter
+        self.iterate_counter()
+
+    def reset_counter(self):
+        print("Resetting")
+        self.clock = PHASES[self.phase_index][0]
+        self.counter_running = False
+        self.clock_label.config(text=self.seconds_to_clock(self.clock))
+        self.phase_label.config(text=f"PHASE: {self.phases[self.phase_index][1]}")
+
+    def seconds_to_clock(self, seconds):
+        current_clock_val = seconds
+        mm = current_clock_val // 60
+        minutes_str = f"0{mm}" if mm < 10 else str(mm)
+        current_clock_val %= 60
+        ss = current_clock_val
+        seconds_str = f"0{ss}" if ss < 10 else str(ss)
+        return f"{minutes_str}:{seconds_str}"
 
 
-def reset_counter():
-    global clock_val, counter_running, phase_index
-    print("Resetting")
-    clock_val = PHASES[phase_index][0]
-    counter_running = False
-    lbl.config(text=seconds_to_clock(clock_val))
-    phase_label.config(text=f"PHASE: {PHASES[phase_index][1]}")
-
-
-frame.grid()
-lbl = ttk.Label(frame, text=seconds_to_clock(clock_val))
-phase_label = ttk.Label(frame, text=f"PHASE: {PHASES[phase_index][1]}")
-phase_label.grid(column=0, row=0)
-lbl.grid(column=0, row=1, pady=(0, 20))
-ttk.Button(frame, text="Start", command=start_counter).grid(column=0, row=2, padx=50)
-ttk.Button(frame, text="Reset", command=reset_counter).grid(column=0, row=3)
-ttk.Button(frame, text="Quit", command=root.destroy).grid(column=0, row=4)
-iterate_counter()
-root.mainloop()
+if __name__ == "__main__":
+    p = PomodoroTimer(PHASES)
+    p.mainloop()
