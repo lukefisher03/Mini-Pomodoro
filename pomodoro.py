@@ -26,8 +26,10 @@ class PomodoroTimer(Tk):
         self.frame = ttk.Frame(self, padding=10)
         self.frame.grid()
         self.phases = phases
-        # for i in range(len(self.phases)):
-        #     self.phases[i][0] *= 60
+
+        # The phase array is in minutes, convert all the values to seconds
+        for i in range(len(self.phases)):
+            self.phases[i][0] *= 60
         self.clock = self.phases[self.phase_index][0]
         self.img = PhotoImage(file="tomato.png")
         self.iconphoto(False, self.img)
