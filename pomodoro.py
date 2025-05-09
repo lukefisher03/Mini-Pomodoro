@@ -63,10 +63,10 @@ class PomodoroTimer(Tk):
         )
         self.phase_label.grid(column=0, row=1)
         self.clock_label.grid(column=0, row=2, pady=(0, 20))
-        ttk.Button(self.frame, text="Start", command=self.start_counter).grid(
+        ttk.Button(self.frame, text="Start", command=self._start_counter).grid(
             column=0, row=3, padx=50
         )
-        ttk.Button(self.frame, text="Reset", command=self.reset_counter).grid(
+        ttk.Button(self.frame, text="Reset", command=self._reset_counter).grid(
             column=0, row=4
         )
         ttk.Button(self.frame, text="Quit", command=self.destroy).grid(column=0, row=5)
@@ -88,11 +88,11 @@ class PomodoroTimer(Tk):
                     "NEW PHASE!",
                     f"{self.phases[previous_phase][1]} has ended.\nPress start to begin new phase, {self.phases[self.phase_index][1]}",
                 )
-                self.reset_counter()
+                self._reset_counter()
                 return
             self.clock -= 1
             self.clock_label.config(text=self.seconds_to_clock(self.clock))
-            self.after(1000, self.iterate_counter)
+            self.after(1000, self._iterate_counter)
 
     def _start_counter(self) -> None:
         """
@@ -104,7 +104,7 @@ class PomodoroTimer(Tk):
         self.clock = (
             self.phases[self.phase_index][0] + 1
         )  # Essentially throw away the first time running iterate_counter
-        self.iterate_counter()
+        self._iterate_counter()
 
     def _reset_counter(self) -> None:
         """
