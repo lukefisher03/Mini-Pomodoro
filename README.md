@@ -1,5 +1,5 @@
 # A simple Pomodoro timer
-A very simple productivity timer built with tkinter in Python. 
+A very simple productivity timer built with tkinter in Python. Built more for personal use than for showcasing extraordinary technical excellence. *The project is still cool though :)*
 
 If you want to modify the length of each phase or even rename them, there's a 2D array that houses all the phase names and lengths. 
 
